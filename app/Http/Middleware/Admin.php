@@ -6,30 +6,31 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class RedirectIfAuthenticated
+
+class Admin
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string|null  ...$guards
      * @return mixed
      */
-    public function handle(Request $request, Closure $next,$guard = null)
+    public function handle(Request $request, Closure $next)
     {
-        //$guards = empty($guards) ? [null] : $guards;
         $destinations = [
-            1 =>  'admin',
+            
             2 =>  'moderator',
             3 =>  'home',
         ];
         
-            if (Auth::guard($guard)->check()) {
-                return redirect()->route($destinations[Auth::user()->role]);
-            }
-        
+        if(!Auth::check()){
+            return redirect()->route('login');
+        }
 
+        if(Auth::user()->role != 1){
+            return redirect()->route($destinations[Auth::user()->role]);
+        }
         return $next($request);
     }
 }
